@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .flex-center {
+    @apply flex justify-center items-center;
+  }
+
+  .flex-between {
+    @apply flex justify-between items-center;
+  }
+
+  .flex-start {
+    @apply flex justify-start items-center;
+  }
+
+  .no-focus {
+    @apply focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
+  }
+
+  .no-active {
+    @apply active:ring-0 active:ring-transparent active:ring-offset-0 !important;
+  }
+
+  .screen-size {
+    @apply h-screen w-screen;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #ffffff;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 50px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .bg-customButon {
+    background-color: #274fbde7;
+  }
+
+  .bg-customButonBlack {
+    background-color: #080e20ce;
+  }
+
+  .bg-customButonHoverBlack {
+    background-color: #18285ace;
+  }
+
+  .bg-customLightBlue {
+    background-color: #ecf0f1e3;
+    /* background-color: #ecf1ee75; */
+  }
+
+  .bg-ghostWhite {
+    background-color: #c2d1ec;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .placeholder {
+    @apply placeholder:text-slate-400;
+  }
+}

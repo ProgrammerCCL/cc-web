@@ -1,0 +1,1 @@
+ALTER TYPE "trans_type" ADD VALUE 'deposit';

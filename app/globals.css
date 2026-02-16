@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("../styles/main.css");
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.custom-shadow {
+  --shadow-x-offset: 0px;
+  --shadow-y-offset: 0px;
+  box-shadow: var(--shadow-x-offset) var(--shadow-y-offset) 30px
+    rgba(255, 0, 60, 0.903);
+}
+.custom-shadow1 {
+  --shadow-x-offset: 5px;
+  --shadow-y-offset: 5px;
+  box-shadow: var(--shadow-x-offset) var(--shadow-y-offset) 10px
+    rgba(255, 0, 60, 0.903);
+}
+.card-custom {
+  position: relative;
+  width: 300px;
+  height: 100px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: aqua;
+}
+
+.card-custom::before,
+.card-custom::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: radial-gradient(
+      200px circle at 50px 100px,
+      rgba(255, 255, 255, 0.2) 50%,
+      transparent 15%
+    ),
+    radial-gradient(
+      200px circle at 50px 120px,
+      rgba(255, 255, 255, 0.2) 40%,
+      transparent 30%
+    );
+}
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+}
+
+.card-custom:hover::before,
+.card-custom:hover::after {
+  animation: bounce 1.5s infinite;
+}
+.custom-shadowcard {
+  -webkit-box-shadow: 3px 2px 4.5px 2.5px #dddddd;
+  -moz-box-shadow: 3px 2px 4.5px 2.5px #dddddd;
+  box-shadow: 3px 2px 4.5px 2.5px #dddddd;
+}
+.bg-custom {
+  background: rgba(55, 134, 184, 0.67);
+  background: -webkit-linear-gradient(
+    0deg,
+    rgba(55, 134, 184, 0.67) 0%,
+    rgba(30, 0, 255, 0.72) 100%
+  );
+  background: linear-gradient(
+    0deg,
+    rgba(55, 134, 184, 0.67) 0%,
+    rgba(30, 0, 255, 0.72) 100%
+  );
+}
+.bg-custom1 {
+  background: #3fe6fd;
+  background: -webkit-linear-gradient(
+    0deg,
+    rgba(9, 9, 230, 0.73) 100%,
+    #3fe6fd 0%
+  );
+  background: linear-gradient(0deg, #3fe6fd 0%, rgba(9, 9, 230, 0.73) 100%);
+}
+.bg-custom2 {
+  background-color: rgba(56, 189, 248, 0.5);
+}
+
+/* ในไฟล์ CSS ของคุณ เช่น styles/globals.css หรือในส่วนของ Tailwind CSS */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #383838;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes blink-start {
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+  25%,
+  75% {
+    opacity: 0;
+  }
+}
+
+@keyframes blink-wip {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes blink-end {
+  0%,
+  60%,
+  80%,
+  100% {
+    opacity: 1;
+  }
+  30%,
+  70%,
+  90% {
+    opacity: 0;
+  }
+}
+
+.blink-start {
+  animation: blink-start 2s infinite;
+}
+
+.blink-wip {
+  animation: blink-wip 2s infinite;
+}
+
+.blink-end {
+  animation: blink-end 2s infinite;
+}

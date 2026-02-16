@@ -1,0 +1,571 @@
+"use client";
+
+import {
+  STATUS_MSG_CI10,
+  EOD_STATE_LIST_CI10,
+  TMcStateCI10,
+} from "@/constants/eod";
+import { Button } from "../ui/button";
+import React, { useEffect } from "react";
+import { IMachineApiData } from "@/types/model";
+import { EODStepComponent } from "./step.component";
+import { checkEndOfDayMcStatus } from "@/lib/utils/endofday";
+import { useEndofDayContext, useMachineContext } from "@/context";
+
+interface ICI10EODProps {
+  isUnlock: boolean;
+  wipId: number | null;
+  transId: string | null;
+  setIsOpen: (b: boolean) => void;
+  setMassage: (s: string) => void;
+  handleFinishEndOfDay: () => void;
+  setIsError: (b: boolean) => void;
+  handleInventoryCheckCoin: () => void;
+  handleInventoryCheckNote: () => void;
+  setCollecReady: (s: string) => void;
+  EodProcessData: IMachineApiData | null;
+  handlerUnlockCasset: (mc: "coin" | "note") => void;
+}
+
+export const CI10EOD = (props: ICI10EODProps) => {
+  const {
+    transId,
+    isUnlock,
+    EodProcessData,
+    handlerUnlockCasset,
+    handleFinishEndOfDay,
+    handleInventoryCheckCoin,
+    handleInventoryCheckNote,
+  } = props;
+
+  const { machineUsed } = useMachineContext();
+  const { stateCheck, nextStep, statusMachine, setStatusMachine } =
+    useEndofDayContext();
+
+  /* eslint-disable */
+  useEffect(() => {
+    if (
+      [
+        "Collect",
+        "collectSuccess",
+        "Coin2",
+        "Coin3",
+        "Note1",
+        "Note3",
+        "Note5",
+        "success",
+      ].includes(statusMachine)
+    ) {
+      nextStep();
+    }
+  }, [statusMachine]);
+
+  //สถานะเครื่องกำหนดลำดับการทำงาน
+  useEffect(() => {
+    if (EodProcessData) {
+      if (transId === null) {
+        return;
+      }
+
+      if (stateCheck.mainIndex === 1) {
+        if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Collect"
+        ) {
+          setStatusMachine("collectSuccess");
+        } else if (isUnlock && statusMachine === "Collect") {
+          setTimeout(() => {
+            setStatusMachine("collectSuccess");
+          }, 2000);
+        }
+      }
+
+      // Coin
+      if (stateCheck.mainIndex === 2) {
+        if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "collectSuccess"
+        ) {
+          setStatusMachine("Coin1");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Coin1"
+        ) {
+          setStatusMachine("Coin2");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Coin2"
+        ) {
+          setStatusMachine("Coin3");
+          setTimeout(() => {
+            handleInventoryCheckCoin();
+          }, 3000);
+        }
+
+        ///กรณี Collect ยังไม่หมด
+        else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "CoinCollect"
+        ) {
+          {
+            setStatusMachine("CoinCollectSuccess");
+          }
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "CoinCollectSuccess"
+        ) {
+          setStatusMachine("CoinCollectSuccess2");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "CoinCollectSuccess2"
+        ) {
+          setStatusMachine("CoinCollectSuccess3");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "CoinCollectSuccess3"
+        ) {
+          setStatusMachine("CoinCollectSuccess4");
+          setTimeout(() => {
+            handleInventoryCheckCoin();
+          }, 3000);
+        }
+
+        // กรณีนำเหรียญออกไม่หมด
+        else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "CoinIncasset"
+        ) {
+          setStatusMachine("CoinIncasset1");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "CoinIncasset1"
+        ) {
+          setStatusMachine("CoinIncasset2");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "CoinIncasset2"
+        ) {
+          setStatusMachine("CoinIncasset3");
+          setTimeout(() => {
+            handleInventoryCheckCoin();
+          }, 3000);
+        }
+      }
+
+      // Note
+      if (stateCheck.mainIndex === 3) {
+        if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Note1"
+        ) {
+          setStatusMachine("Note2");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Note2"
+        ) {
+          setStatusMachine("Note3");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Note3"
+        ) {
+          setStatusMachine("Note4");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Note4"
+        ) {
+          setStatusMachine("Note5");
+        } else if (statusMachine === "Note5") {
+          setTimeout(() => {
+            setStatusMachine("Note6");
+          }, 1500);
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Note6"
+        ) {
+          const { statusNote } = EodProcessData;
+          if (statusNote) {
+            if ("StatusChange STATUS_IDLE" === statusNote) {
+              setStatusMachine("NoteCheck");
+              setTimeout(() => {
+                handleInventoryCheckNote();
+              }, 3000);
+            } else if ("WaitForInsertion COLLECTION_BOX" === statusNote) {
+              setStatusMachine("NotCasset");
+            }
+          }
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "Note7"
+        ) {
+          setStatusMachine("Note8");
+          setTimeout(() => {
+            handleFinishEndOfDay();
+          }, 3000);
+        }
+
+        ///กรณี Collect ยังไม่หมด
+        else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteCollect"
+        ) {
+          {
+            setStatusMachine("NoteCollectSuccess");
+          }
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteCollectSuccess"
+        ) {
+          setStatusMachine("NoteCollectSuccess1");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteCollectSuccess1"
+        ) {
+          setStatusMachine("NoteCollectSuccess2");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteCollectSuccess2"
+        ) {
+          setStatusMachine("NoteCollectSuccess3");
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteCollectSuccess3"
+        ) {
+          setStatusMachine("Note6");
+        }
+
+        // กรณีนำธนบัตรออกไม่หมด
+        else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteIncasset"
+        ) {
+          {
+            setStatusMachine("NoteIncasset1");
+          }
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteIncasset1"
+        ) {
+          {
+            setStatusMachine("NoteIncasset2");
+          }
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteIncasset2"
+        ) {
+          {
+            setStatusMachine("NoteIncasset3");
+          }
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NoteIncasset3"
+        ) {
+          {
+            setStatusMachine("Note6");
+          }
+        }
+
+        // กรณีลืมใส่กล่องธนบัตรกลับ
+        else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NotCasset"
+        ) {
+          {
+            setStatusMachine("NotCasset1");
+          }
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NotCasset1"
+        ) {
+          {
+            setStatusMachine("NotCasset2");
+          }
+        } else if (
+          checkEndOfDayMcStatus({
+            model: machineUsed?.model || "",
+            state: statusMachine as TMcStateCI10,
+            coinStatus: EodProcessData.statusCoin || "",
+            noteStatus: EodProcessData.statusNote || "",
+          }) &&
+          statusMachine === "NotCasset2"
+        ) {
+          {
+            setStatusMachine("Note6");
+          }
+        }
+      }
+    }
+  }, [
+    EodProcessData,
+    transId,
+    stateCheck,
+    statusMachine,
+    machineUsed,
+    setStatusMachine,
+  ]);
+
+  return (
+    <div className="relative mx-auto flex h-[570px] w-4/5 flex-col items-center justify-around rounded-xl border-2 border-blue-900 bg-white shadow-md -translate-y-10">
+      <div className="flex w-5/6 items-center justify-between bg-white p-4 text-2xl">
+        <div className="text-left">Steps for end-of-day closing</div>
+        <div>
+          <img
+            src="/assets/images/money_11535801.png"
+            alt="Cash in icon"
+            width={65}
+            height={55}
+            className="object-cover"
+          />
+        </div>
+      </div>
+      <div className="mx-auto  grid w-5/6 -translate-y-16 grid-cols-9 place-content-center place-items-center rounded-lg border-2 border-blue-900 bg-slate-100 p-4 ">
+        {/* ROW 1 */}
+        {EOD_STATE_LIST_CI10.map((mainState, idx) => (
+          <React.Fragment key={mainState.value}>
+            <EODStepComponent
+              label={mainState.label}
+              no={mainState.no}
+              itemIndex={idx}
+              itemStep={0}
+              currentIndex={stateCheck.mainIndex}
+              currentStep={0}
+              finished={
+                idx < stateCheck.mainIndex ||
+                stateCheck.mainIndex === EOD_STATE_LIST_CI10.length - 1
+              }
+              showLabel
+            />
+            {idx < EOD_STATE_LIST_CI10.length - 1 ? (
+              <span className=" h-0.5 w-36 bg-slate-500"></span>
+            ) : null}
+          </React.Fragment>
+        ))}
+
+        {
+          /* Coin Steps */
+          EOD_STATE_LIST_CI10[2].steps.map((coinStep, idx) => {
+            const rowStart =
+              idx === 0
+                ? "row-start-2"
+                : idx === 1
+                  ? "row-start-3"
+                  : "row-start-4";
+            return (
+              <EODStepComponent
+                key={`coin-${idx}`}
+                className={`col-start-5 ${rowStart}`}
+                label={coinStep.label}
+                no={coinStep.no}
+                itemIndex={2}
+                itemStep={idx}
+                currentIndex={stateCheck.mainIndex}
+                currentStep={stateCheck.currentStep}
+                showLabel
+              />
+            );
+          })
+        }
+
+        {
+          /* note Steps */
+          EOD_STATE_LIST_CI10[3].steps.map((noteStep, idx) => {
+            const rowStart =
+              idx === 0
+                ? "row-start-2"
+                : idx === 1
+                  ? "row-start-3"
+                  : "row-start-4";
+            return (
+              <EODStepComponent
+                key={`note-${idx}`}
+                className={`col-start-7 ${rowStart}`}
+                label={noteStep.label}
+                no={noteStep.no}
+                itemIndex={3}
+                itemStep={idx}
+                currentIndex={stateCheck.mainIndex}
+                currentStep={stateCheck.currentStep}
+                showLabel
+              />
+            );
+          })
+        }
+      </div>
+      <div className="mx-auto -mt-28 flex w-5/6 items-center justify-between rounded-lg bg-slate-50 p-4 text-left text-4xl">
+        {/* ข้อความทางซ้าย */}
+        <span>{STATUS_MSG_CI10[statusMachine as TMcStateCI10] || ""}</span>
+
+        {/* ปุ่มทางขวา */}
+        {(["collectSuccess", "CoinCollectSuccess", "CoinIncasset"].includes(
+          statusMachine
+        ) ||
+          ["Note1", "NoteCollectSuccess", "NoteIncasset", "NotCasset"].includes(
+            statusMachine
+          )) && (
+          <Button
+            className="h-[70px] w-[350px] border-2 bg-green-800 text-3xl text-white shadow-md hover:bg-slate-800"
+            onClick={() =>
+              handlerUnlockCasset(
+                [
+                  "collectSuccess",
+                  "CoinCollectSuccess",
+                  "CoinIncasset",
+                ].includes(statusMachine)
+                  ? "coin"
+                  : "note"
+              )
+            }
+          >
+            {`ปลดล๊อคกล่อง${
+              ["collectSuccess", "CoinCollectSuccess", "CoinIncasset"].includes(
+                statusMachine
+              )
+                ? "เหรียญ"
+                : "ธนบัตร"
+            }`}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+  /* eslint-enable */
+};
